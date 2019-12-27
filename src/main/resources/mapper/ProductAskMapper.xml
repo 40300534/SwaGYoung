@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.ProductAskMapper">
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.ProductAsk">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="product_id" jdbcType="BIGINT" property="productId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="inventory" jdbcType="INTEGER" property="inventory"/>
+        <result column="fee" jdbcType="VARCHAR" property="fee"/>
+        <result column="is_active" jdbcType="TINYINT" property="isActive"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="updater" jdbcType="BIGINT" property="updater"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, product_id, user_id, price, inventory, fee, is_active,create_time,update_time,updater
+  </sql>
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM product_ask
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Long">
+    DELETE FROM product_ask
+    WHERE id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="add" parameterType="com.breeze.pojo.ProductAsk">
+    INSERT INTO product_ask (id, product_id, user_id, price,
+      create_time, inventory, fee, status
+      )
+    VALUES (#{id,jdbcType=BIGINT} ,#{productId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL},
+      #{createTime,jdbcType=TIMESTAMP}, #{inventory,jdbcType=INTEGER}, #{fee,jdbcType=LONGVARCHAR},#{status,jdbcType=INTEGER}
+      )
+  </insert>
+    <update id="update" parameterType="com.breeze.pojo.ProductAsk">
+    UPDATE product_ask
+    SET product_id = #{productId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      price = #{price,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      inventory = #{inventory,jdbcType=INTEGER},
+      fee = #{fee,jdbcType=LONGVARCHAR},
+      status = #{status,jdbcType=INTEGER}
+    WHERE id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="findHighestAsk" resultType="java.math.BigDecimal">
+      SELECT MAX(price) as highest_bid_sell
+      FROM product_bid
+      WHERE product_id=#{productId,jdbcType=BIGINT} AND status = 2
+    </select>
+    <select id="findLowestAsk" resultType="java.math.BigDecimal">
+      SELECT MIN(price) as lowest_bid_sell
+      FROM product_bid
+      WHERE product_id=#{productId,jdbcType=BIGINT} AND status = 2
+    </select>
+    <select id="findAll" resultType="com.breeze.pojo.ProductAsk">
+    SELECT
+        <include refid="Base_Column_List"/>
+        FROM product_ask ORDER BY  create_time DESC
+     </select>
+    <select id="findByUserId" resultType="com.breeze.pojo.bo.ProductAskBO">
+        SELECT
+        pa.id Id,
+        pa.product_id productId,
+        p.name productName,
+        u.name userName,
+        pa.price price,
+        pa.create_time createTime,
+        pa.inventory inventory,
+        pa.fee fee
+      FROM
+        product_ask AS pa
+        JOIN product p ON p.id=pa.product_id
+        JOIN user u ON u.id = pa.user_id
+    WHERE
+        pa.user_id= #{userId,jdbcType=BIGINT}
+    ORDER BY pa.create_time DESC
+    </select>
+    <select id="findUserSellHistory" resultType="com.breeze.pojo.bo.UserSellHistoryBO">
+        SELECT
+        o.id orderId,p.id productId,p.name productName,o.price,o.create_time createTime
+        FROM `order` o
+        JOIN order_status os ON os.id =o.status_id
+        JOIN product_order po ON po.order_id=o.id
+        JOIN product p ON p.id=po.product_id
+        WHERE o.seller_id=#{userId,jdbcType=BIGINT} ORDER BY createTime DESC
+    </select>
+
+    <select id="findByUserIdAndProductId" resultType="com.breeze.pojo.ProductAsk">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM product_ask
+        WHERE user_id=#{userId,jdbcType=BIGINT} AND product_id=#{productId,jdbcType=BIGINT}
+    </select>
+    <update id="decreaseStock">
+        UPDATE product_ask
+        SET
+          inventory =(inventory - 1)
+        WHERE inventory - 1 = 0 and id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="sellQuantity" resultType="java.lang.Long">
+         SELECT
+         COUNT(user_id) AS askNumber
+         FROM `product_ask` pa
+         WHERE pa.user_id=#{userId,jdbcType=BIGINT}
+         GROUP BY pa.user_id
+    </select>
+
+    <select id="findAllMinProduct" resultType="com.breeze.pojo.bo.ProductAskBO">
+        SELECT
+        	pa.id AS id,
+        	pa.product_id AS productId,
+        	MIN(pa.price) AS price,
+        	pa.fee AS fee,
+        	pa.inventory AS inventory,
+        	u.name AS userName
+        FROM
+        	product_ask AS pa
+        	JOIN `user` AS u
+        	ON (u.id = pa.user_id)
+        GROUP BY
+        	pa.product_id
+        ORDER BY
+        	pa.product_id ASC
+    </select>
+</mapper>

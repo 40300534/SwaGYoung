@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.ProductOrderMapper">
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.ProductOrder">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="product_id" jdbcType="BIGINT" property="productId"/>
+        <result column="order_id" jdbcType="BIGINT" property="orderId"/>
+        <result column="sold_price" jdbcType="DECIMAL" property="soldPrice"/>
+        <result column="quantity" jdbcType="INTEGER" property="quantity"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, product_id, order_id, sold_price, quantity
+  </sql>
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM product_order
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Long">
+    DELETE FROM product_order
+    WHERE id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="add" keyColumn="id" keyProperty="id" parameterType="com.breeze.pojo.ProductOrder"
+            useGeneratedKeys="true">
+    INSERT INTO product_order (product_id, order_id, sold_price,
+      quantity)
+    VALUES (#{productId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{soldPrice,jdbcType=DECIMAL},
+      #{quantity,jdbcType=INTEGER})
+  </insert>
+    <update id="update" parameterType="com.breeze.pojo.ProductOrder">
+    UPDATE product_order
+    SET product_id = #{productId,jdbcType=BIGINT},
+      order_id = #{orderId,jdbcType=BIGINT},
+      sold_price = #{soldPrice,jdbcType=DECIMAL},
+      quantity = #{quantity,jdbcType=INTEGER}
+    WHERE id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="findByOrderId" parameterType="java.lang.Long" resultType="com.breeze.pojo.bo.ProductOrderBO">
+      SELECT distinct(po.id) productOrderId,p.id productId,p.name productName,pi.url productImage,po.quantity quantity,po.sold_price soldPrice
+,ua.province province,ua.city city,ua.address address
+      FROM product_order po
+      JOIN product p ON p.id =po.product_id
+      JOIN product_image pi ON  pi.product_id=p.id
+	  JOIN order_shipping_address osd ON osd.order_id=po.order_id
+	  JOIN user_address ua ON ua.id =	osd.shipping_address_id
+      WHERE  pi.is_master=1 AND po.order_id =#{orderId,jdbcType=BIGINT}
+  </select>
+</mapper>

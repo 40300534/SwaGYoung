@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.ShoppingCartMapper">
+
+    <select id="findAll" parameterType="java.lang.Long" resultType="com.breeze.pojo.bo.ShoppingCartBO">
+    SELECT
+        `product`.`id`
+        , `product`.`name`
+        , MIN(`product_ask`.`price`) AS price
+        , `product_image`.`url` AS image_folder
+        , `shoppingcart`.`quantity`
+    FROM
+        `product_image`
+        INNER JOIN `product`
+            ON (`product_image`.`product_id` = `product`.`id`)
+        INNER JOIN `product_ask`
+            ON (`product_ask`.`product_id` = `product`.`id`)
+        INNER JOIN `shoppingcart`
+            ON (`shoppingcart`.`product_id` = `product`.`id`)
+    WHERE (`shoppingcart`.user_id = #{userId})
+    GROUP BY `product_ask`.`product_id`;
+    </select>
+
+    <select id="findByProductId" parameterType="java.lang.Long" resultType="com.breeze.pojo.bo.ShoppingCartBO">
+     SELECT
+        `product`.`id`
+        , `product`.`name`
+        , MIN(`product_ask`.`price`) AS price
+        , `product_image`.`url` AS image_folder
+    FROM
+        `product_image`
+        INNER JOIN `product`
+            ON (`product_image`.`product_id` = `product`.`id`)
+        INNER JOIN `product_ask`
+            ON (`product_ask`.`product_id` = `product`.`id`)
+    WHERE (`product`.`id`= #{productId})
+    GROUP BY `product`.`id`
+
+    </select>
+
+    <select id="findByUserId" parameterType="java.lang.Long" resultType="com.breeze.pojo.UserProductShoppingCart">
+        SELECT * from shoppingcart WHERE user_id = #{userId};
+    </select>
+
+
+</mapper>

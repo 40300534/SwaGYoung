@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.MessageMapper">
+
+    <sql id="Base_Column_List">
+        id,sender_id,receiver_id,`create_time`,read_flag,`text`,message_type_id
+    </sql>
+
+    <select id="findAll" resultType="com.breeze.pojo.Message">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message
+    </select>
+
+    <select id="findByReceiverId" parameterType="java.lang.Long" resultType="com.breeze.pojo.bo.MessageBO">
+        SELECT
+            m.create_time AS messageCreateTime,
+            m.receiver_id AS messageReceiverId,
+            m.text AS messageText,
+            COUNT(m.id) AS unreadMessageCount,
+            m.sender_id AS messageSanderId,
+            m.`message_type_id` AS messageTypeId,
+            mt.name AS messageTypeName
+        FROM
+            message AS m
+            JOIN message_type AS mt
+                ON (m.message_type_id = mt.id)
+        WHERE (m.receiver_id=#{receiverId})
+        GROUP BY m.`sender_id`
+        ORDER BY m.`create_time` ASC
+
+    </select>
+    
+    <select id="findReadFlag" resultType="com.breeze.pojo.bo.MessageBO">
+        SELECT COUNT(m.`id`) unreadMessageCount , m.message_type_id messageTypeId
+          FROM message m
+          WHERE m.`read_flag`=0
+          GROUP BY m.`message_type_id`
+    </select>
+
+    <select id="findBySenderId" parameterType="java.lang.Long" resultType="com.breeze.pojo.Message">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message m
+        WHERE m.`sender_id`= #{senderId}
+        ORDER BY m.`create_time` ASC
+
+    </select>
+
+    <select id="findById" parameterType="java.lang.Long" resultType="com.breeze.pojo.Message">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message
+        WHERE id = #{id};
+    </select>
+
+    <insert id="add" parameterType="com.breeze.pojo.Message">
+        INSERT INTO message (id , sender_id , receiver_id , create_time , read_flag , `text` , message_type_id)
+        VALUES (#{id} , #{senderId} , #{receiverId} , #{createTime} , #{readFlag} , #{text} , #{messageTypeId});
+    </insert>
+
+    <update id="update" parameterType="com.breeze.pojo.Message">
+        UPDATE message SET sender_id = #{senderId} , receiver_id = #{receiverId} , create_time = #{createTime}
+         , read_flag = #{readFlag} , `text` = #{text} , message_type_id = #{messageTypeId}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM message WHERE id = #{id};
+    </delete>
+
+</mapper>

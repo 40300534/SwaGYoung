@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.ProductMapper">
+
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.Product">
+        <result column="id" property="id"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="image_folder" property="imageFolder" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="location" property="location" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="product_category_id" property="productCategoryId" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <result column="brand_id" property="brandId" jdbcType="INTEGER"/>
+        <result column="origin_id" property="originId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        `name`,
+        image_folder,
+        `create_time`,
+        `modify_time`,
+        `location`,
+        description,
+        product_category_id,
+        status,
+        brand_id,
+        origin_id
+    </sql>
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="product.id">
+        INSERT INTO product (
+        <include refid="Base_Column_List"/>
+        ) VALUES (
+        #{product.id,jdbcType=BIGINT},
+        #{product.name,jdbcType=VARCHAR},
+        #{product.imageFolder,jdbcType=VARCHAR},
+        #{product.createTime,jdbcType=TIMESTAMP},
+        #{product.modifyTime,jdbcType=TIMESTAMP},
+        #{product.location,jdbcType=VARCHAR},
+        #{product.description,jdbcType=VARCHAR},
+        #{product.productCategoryId,jdbcType=INTEGER},
+        #{product.status,jdbcType=VARCHAR},
+        #{product.brandId,jdbcType=INTEGER},
+        #{product.originId,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE product
+        <set>
+            <if test="product.id != null">
+                id = #{product.id},
+            </if>
+            <if test="product.name != null">
+                NAME = #{product.name,jdbcType=VARCHAR},
+            </if>
+            <if test="product.imageFolder != null">
+                image_folder = #{product.imageFolder,jdbcType=VARCHAR},
+            </if>
+            <if test="product.createTime != null">
+                create_time = #{product.createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="product.location != null">
+                location = #{product.location,jdbcType=VARCHAR},
+            </if>
+            <if test="product.description != null">
+                description = #{product.description,jdbcType=VARCHAR},
+            </if>
+            <if test="product.productCategoryId != null">
+                product_category_id = #{product.productCategoryId,jdbcType=INTEGER},
+            </if>
+            <if test="product.status != null">
+                status = #{product.status,jdbcType=INTEGER},
+            </if>
+            <if test="product.modifyTime != null">
+                modify_time = #{product.modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="product.brandId != null">
+                brand_id = #{product.brandId,jdbcType=INTEGER},
+            </if>
+            <if test="product.originId != null">
+                origin_id = #{product.originId,jdbcType=INTEGER},
+            </if>
+        </set>
+        WHERE id=#{product.id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM  product
+        WHERE id=#{id,jdbcType=BIGINT}
+    </delete>
+
+    <select id="findAll" resultType="com.breeze.pojo.bo.ProductBO">
+        SELECT
+        pa.product_id AS productId,
+        pc.NAME AS productCategoryName,
+        p.NAME AS productName,
+        MIN( pa.price ) AS price,
+        MIN( pa.create_time ) AS createTime,
+        pi.url AS masterPicture
+        FROM
+        product_ask pa
+        JOIN product p ON p.id = pa.product_id
+        JOIN product_category pc ON p.product_category_id = pc.id
+        JOIN product_image pi ON pi.product_id = p.id
+        WHERE
+        pi.is_master = 1 AND pa.inventory >= 1 AND pa.status = 2
+        GROUP BY
+        pa.product_id,
+        pi.url
+    </select>
+
+    <select id="findAllProduct" resultType="com.breeze.pojo.bo.ProductManageBO">
+         SELECT
+            p.`id` AS productId,
+            p.`name` AS `name`,
+            p.`description` AS description,
+            p.`location` AS location,
+            p.`status` AS `status`,
+            pim.`url` AS imageUrl,
+            p.`create_time` AS createTime,
+            p.`modify_time` AS modifyTime,
+            pim.`is_master` AS imageIsMaster,
+            b.`name` AS brandName,
+            o.`name` AS originName,
+            pc.`name` AS categoryName
+
+        FROM
+            product_image AS pim
+            JOIN product AS p
+                ON (pim.`product_id` = p.`id`)
+            JOIN origin AS o
+        	ON(o.id = p.origin_id)
+            JOIN product_category AS pc
+        	ON(pc.id = p.product_category_id)
+            JOIN brand AS b
+        	ON(b.`id` = p.`brand_id`)
+        GROUP BY
+            p.id
+        ORDER BY
+            p.`id` ASC
+    </select>
+
+    <select id="findById" parameterType="Long" resultType="com.breeze.pojo.Product">
+        SELECT id,`name`,product_category_id,image_folder,status,create_time,location,description FROM product WHERE status=1 AND id=#{id};
+    </select>
+
+    <select id="findByProductCategoryId" resultType="com.breeze.pojo.bo.ProductBO">
+        SELECT
+        pa.product_id AS productId,
+        pc.NAME AS productCategoryName,
+        p.NAME AS productName,
+        MIN( pa.price ) AS price,
+        MIN( pa.create_time ) AS createTime,
+        pi.url AS masterPicture,
+        sum(pa.inventory) AS inventory
+        FROM
+        product p
+        JOIN product_ask pa  ON p.id = pa.product_id
+        JOIN product_category pc ON p.product_category_id = pc.id
+        JOIN product_image pi ON pi.product_id = p.id
+        WHERE p.product_category_id = #{productCategoryId}
+        AND pi.is_master = 1
+        AND pa.status = 2
+        GROUP BY
+        pa.product_id,
+        pi.url
+        ORDER BY productId,
+        createTime DESC
+    </select>
+
+    <select id="findByNameAndCategoryId" resultType="com.breeze.pojo.bo.ProductBO">
+        SELECT
+        p.id AS productId,
+        p.name AS productName,
+        pc.name AS productCategoryName,
+        pa.price AS price,
+        pi.url AS masterPicture
+        FROM
+        product AS p
+        JOIN product_category AS pc ON pc.id = p.product_category_id
+        JOIN product_ask AS pa ON p.id = pa.product_id
+        JOIN product_image AS pi ON pi.product_id = p.id
+        WHERE pi.is_master=1 AND pa.inventory >= 1 AND
+        p.NAME LIKE '%${name}%'
+        <if test="product_category_id !=null">
+            AND p.product_category_id = #{product_category_id}
+        </if>
+        ORDER BY p.create_time ASC
+    </select>
+
+    <select id="findProductDetailsById" parameterType="Long" resultType="com.breeze.pojo.bo.ProductDetailsBO">
+    SELECT
+        p.id AS id,
+        p.NAME AS productName,
+        p.description,
+        MIN(pa.price) AS price,
+        pa.inventory as inventory
+    FROM
+        product_ask pa
+        LEFT JOIN product p ON p.id = pa.product_id
+        LEFT JOIN product_image pi ON pi.product_id = p.id
+    WHERE
+        p.id = #{product_id} and pa.`status` = 2
+    GROUP BY
+        pa.inventory
+        ORDER BY
+			pa.inventory desc LIMIT 1
+    </select>
+
+    <select id="newestProduct" resultType="com.breeze.pojo.bo.ProductBO">
+        SELECT
+        pa.product_id AS productId,
+        pc.NAME AS productCategoryName,
+        p.NAME AS productName,
+        MIN( pa.price ) AS price,
+        MIN( pa.create_time ) AS createTime,
+        pi.url AS masterPicture
+        FROM
+        product_ask pa
+        JOIN product p ON p.id = pa.product_id
+        JOIN product_category pc ON p.product_category_id = pc.id
+        JOIN product_image pi ON pi.product_id = p.id
+        GROUP BY
+        pa.product_id,
+        pi.url
+        ORDER BY
+        createTime DESC
+    </select>
+
+    <select id="findProductSalesVolumeTop" resultType="com.breeze.pojo.bo.ProductSalesVolumeBO">
+        SELECT
+        po.product_id,
+        COUNT(po.quantity) AS quantity,
+        MAX(o.create_time) AS createTime
+        FROM
+        product_order AS po
+        JOIN `order` AS o ON o.id = po.order_id
+        WHERE
+        DATE_SUB( CURDATE( ), INTERVAL 30 DAY ) <![CDATA[ <= ]]> date( o.create_time )
+        GROUP BY
+        po.product_id
+        ORDER BY
+        quantity DESC,
+        createTime DESC
+    </select>
+
+    <select id="findProductInId" resultType="com.breeze.pojo.bo.ProductBO">
+        SELECT
+        pa.product_id AS productId,
+        pc.NAME AS productCategoryName,
+        p.NAME AS productName,
+        MIN( pa.price ) AS price,
+        MIN( pa.create_time ) AS createTime,
+        pi.url AS masterPicture
+        FROM
+        product_ask pa
+        JOIN product p ON p.id = pa.product_id
+        JOIN product_category pc ON p.product_category_id = pc.id
+        JOIN product_image pi ON pi.product_id =p.id
+        where pi.is_master =1 AND p.id IN
+        <foreach collection="list" index="index" item="product_id" open="(" separator="," close=")">
+            #{product_id}
+        </foreach>
+        GROUP BY
+        pa.product_id,pi.url
+        ORDER BY FIELD(pa.product_id,
+        <foreach collection="list" index="index" item="product_id" separator=",">
+            #{product_id}
+        </foreach>
+        )
+
+    </select>
+
+    <select id="recentlySoldProducts" resultType="com.breeze.pojo.bo.ProductBO">
+        SELECT
+        po.product_id AS productId,
+        MAX( o.create_time ) AS createTime,
+        p.NAME AS productName,
+        MIN( pa.price ) AS price,
+        pi.url AS masterPicture
+        FROM
+        product_order AS po
+        JOIN `order` AS o ON o.id = po.order_id
+        JOIN product p ON po.product_id = p.id
+        JOIN product_ask pa ON pa.product_id = p.id
+        JOIN product_image pi ON pi.product_id = p.id
+        WHERE o.status_id = 3
+        GROUP BY
+        po.product_id,
+        pi.url
+        ORDER BY
+        createTime DESC
+    </select>
+
+    <select id="queryPrompt" resultType="com.breeze.pojo.bo.ProductQueryPromptBO">
+        SELECT id,`name` FROM product WHERE `name` LIKE CONCAT('%',#{name},'%') LIMIT 10;
+    </select>
+
+    <select id="findLastTransactionPriceByProductId" parameterType="Long" resultType="java.math.BigDecimal">
+        SELECT po.sold_price AS soldPrice FROM product_order AS po
+        LEFT JOIN `order` AS o  ON o.id = po.order_id  WHERE po.product_id = #{productId} ORDER BY o.create_time DESC limit 1
+    </select>
+
+    <select id="findProductSalesVolumeTopByProductCategoryId" resultType="com.breeze.pojo.bo.ProductSalesVolumeBO">
+        SELECT
+        po.product_id AS productId,
+        COUNT(po.quantity) AS quantity,
+        MAX(o.create_time) AS createTime
+        FROM
+        product_order AS po
+        JOIN `order` AS o ON o.id = po.order_id
+        JOIN product p  on po.product_id = p.id
+        JOIN product_category pc on p.product_category_id = pc.id
+        WHERE
+        DATE_SUB(CURDATE(), INTERVAL 30 DAY) <![CDATA[ <= ]]> DATE( o.create_time ) AND
+        p.product_category_id=#{productCategoryId}
+        GROUP BY
+        po.product_id
+        ORDER BY
+        quantity DESC,
+        createTime DESC
+    </select>
+
+    <select id="findProductPublicAttributesByProductId" resultType="com.breeze.pojo.bo.ProductAttributesBO">
+    SELECT
+        p.id AS productId,
+        b.NAME AS brandName,
+        o.`NAME` AS originName,
+        b.DESC AS `desc`
+    FROM
+        product AS p
+        JOIN brand b ON b.id = p.brand_id
+        JOIN ORIGIN o ON o.id = p.origin_id
+    WHERE
+        p.id = #{productId};
+    </select>
+
+    <select id="findProductHistoryList" resultType="com.breeze.pojo.bo.ProductHistoryPriceBO">
+       SELECT
+        DATE_FORMAT( o.create_time, '%Y-%m-%d' ) AS createTime,
+        MIN( po.sold_price ) AS price
+        FROM
+        product_order po
+        JOIN `order` AS o ON o.id = po.order_id
+        WHERE
+        po.product_id = #{productId}
+        GROUP BY
+        DATE_FORMAT( o.create_time, '%Y-%m-%d' )
+        ORDER BY
+        createTime
+        LIMIT 1000
+
+    </select>
+
+    <select id="findProductBaseInfoByProductId" resultType="com.breeze.pojo.bo.ProductBO">
+    SELECT
+        p.id AS productId,
+        p.NAME AS productName,
+        pi.url AS masterPicture
+    FROM
+        product AS p
+        JOIN product_ask AS pa ON pa.product_id = p.id
+        JOIN product_image pi ON pi.product_id = p.id
+    WHERE
+        p.id =  #{productId,jdbcType=BIGINT}
+        AND pi.is_master = 1
+    GROUP BY
+        pa.product_id,
+        pi.url
+    </select>
+
+    <select id="findProductBuyBaseInfoByProductId" resultType="com.breeze.pojo.bo.ProductBO">
+    SELECT
+        p.id AS productId,
+        p.NAME AS productName,
+        MIN( pa.price ) AS price,
+        MAX( pb.price ) AS maxPrice,
+        pi.url AS masterPicture,
+        pa.user_id AS sellUserId,
+        padt.transaction_id AS sellTransactionId
+    FROM
+        product_ask pa
+        LEFT JOIN product p ON p.id = pa.product_id
+        LEFT JOIN product_image pi ON pi.product_id = p.id
+        LEFT JOIN product_bid pb ON p.id = pb.product_id
+        LEFT JOIN product_ask_deposit_transaction padt ON pa.id = padt.product_ask_id
+    WHERE
+        pi.is_master = 1
+        AND p.id = #{productId,jdbcType=BIGINT}
+        AND pa.`status` = 2
+        AND pa.inventory = 1
+    GROUP BY
+        pa.product_id,
+        pi.url,
+        sellUserId,
+        sellTransactionId
+    ORDER BY
+        price
+        LIMIT 1
+    </select>
+
+
+    <select id="findProductSellBaseInfoByProductId" resultType="com.breeze.pojo.bo.ProductBO">
+    SELECT
+        p.id AS productId,
+        p.NAME AS productName,
+        pi.url AS masterPicture,
+        MAX( pb.price ) AS price,
+        pb.user_id AS buyerUserId,
+        pbdt.transaction_id AS buyerTransactionId
+    FROM
+        product_bid AS pb
+        JOIN product p ON p.id = pb.product_id
+        JOIN product_image pi ON pi.product_id = p.id
+        LEFT JOIN product_bid_deposit_transaction pbdt ON pb.id = pbdt.product_bid_id
+    WHERE
+        pi.is_master = 1
+        AND p.id = #{productId,jdbcType=BIGINT}
+    GROUP BY
+        pi.url,
+        buyerUserId,
+        buyerTransactionId
+    ORDER BY
+        price DESC
+        LIMIT 1
+    </select>
+
+    <select id="findByName" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT
+        COUNT(id)
+        FROM product
+        WHERE `name` = #{name}
+    </select>
+</mapper>

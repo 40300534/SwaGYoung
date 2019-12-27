@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.UserPaymentAccountMapper">
+  <resultMap id="BaseResultMap" type="com.breeze.pojo.UserPaymentAccount">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+    <result column="payment_type_id" jdbcType="INTEGER" property="paymentTypeId" />
+    <result column="account_no" jdbcType="VARCHAR" property="accountNo" />
+    <result column="is_default" jdbcType="TINYINT" property="isDefault" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, user_name, payment_type_id, account_no, is_default
+  </sql>
+  <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM user_payment_account
+    WHERE id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Long">
+    DELETE FROM user_payment_account
+    WHERE id = #{id , jdbcType=BIGINT} ;
+  </delete>
+  <insert id="add" parameterType="com.breeze.pojo.UserPaymentAccount">
+    INSERT INTO user_payment_account (id , user_id , user_name , payment_type_id , account_no , is_default)
+    VALUES (#{id} , #{userId} , #{userName} , #{paymentTypeId} , #{accountNo} , #{isDefault});
+  </insert>
+  <update id="update" parameterType="com.breeze.pojo.UserPaymentAccount">
+    UPDATE user_payment_account
+    SET user_id = #{userId,jdbcType=BIGINT},
+      user_name = #{userName,jdbcType=VARCHAR},
+      payment_type_id = #{paymentTypeId,jdbcType=INTEGER},
+      account_no = #{accountNo,jdbcType=VARCHAR},
+      is_default = #{isDefault,jdbcType=TINYINT}
+    WHERE id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="findAll" resultType="com.breeze.pojo.UserPaymentAccount">
+    SELECT
+     <include refid="Base_Column_List"/>
+    FROM user_payment_account;
+  </select>
+
+  <select id="findByUserId" resultType="com.breeze.pojo.bo.UserPaymentAccountBO" parameterType="java.lang.Long">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM user_payment_account WHERE user_id = #{userId}
+  </select>
+
+  <delete id="deleteByUserIdAndPaymentTypeId" parameterType="java.lang.Long">
+    DELETE FROM user_payment_account
+    WHERE user_id = #{userId , jdbcType=BIGINT}
+    AND payment_type_id = #{paymentTypeId , jdbcType=BIGINT}
+  </delete>
+
+  <select id="findByUserIdAndUserPaymentId" parameterType="java.lang.Long" resultType="com.breeze.pojo.UserPaymentAccount">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM user_payment_account
+    WHERE user_id = #{userId}
+    AND payment_type_id = #{paymentTypeId}
+  </select>
+</mapper>

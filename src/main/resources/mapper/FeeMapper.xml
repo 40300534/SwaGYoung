@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.FeeMapper">
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.Fee">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_type_id" jdbcType="INTEGER" property="userTypeId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="value" jdbcType="DECIMAL" property="value"/>
+        <result column="value_type_id" jdbcType="INTEGER" property="valueTypeId"/>
+        <result column="is_seller" jdbcType="TINYINT" property="isSeller"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, user_type_id, `name`, `value`, value_type_id, is_seller
+    </sql>
+
+    <insert id="add" keyColumn="id" keyProperty="id" parameterType="com.breeze.pojo.Fee" useGeneratedKeys="true">
+        INSERT INTO fee (user_type_id, `name`, `value`,
+        value_type_id, is_seller)
+        VALUES (#{userTypeId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{value,jdbcType=DECIMAL},
+        #{valueTypeId,jdbcType=INTEGER}, #{isSeller,jdbcType=TINYINT})
+    </insert>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM fee
+        WHERE id=#{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteById">
+    DELETE FROM  fee
+    WHERE id=#{id,jdbcType=INTEGER}
+  </delete>
+
+    <update id="update">
+        UPDATE fee
+        <set>
+            <if test="updated.id != null">
+                id = #{updated.id,jdbcType=INTEGER},
+            </if>
+            <if test="updated.userTypeId != null">
+                user_type_id = #{updated.userTypeId,jdbcType=INTEGER},
+            </if>
+            <if test="updated.name != null">
+                name = #{updated.name,jdbcType=VARCHAR},
+            </if>
+            <if test="updated.value != null">
+                value = #{updated.value,jdbcType=DECIMAL},
+            </if>
+            <if test="updated.valueTypeId != null">
+                value_type_id = #{updated.valueTypeId,jdbcType=INTEGER},
+            </if>
+            <if test="updated.isSeller != null">
+                is_seller = #{updated.isSeller,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+    <select id="findFeeByUserTypeId" resultType="com.breeze.pojo.bo.FeeBO">
+        SELECT
+        f.`name` AS `name`,
+        f.`value` AS `value`,
+	    f.value_type_id AS fee_type_id,
+        fvt.`name` AS fee_type
+        FROM
+	    fee AS f
+	    JOIN fee_value_type AS fvt ON f.value_type_id = fvt.id
+        WHERE
+	    f.user_type_id =#{userTypeId,jdbcType=INTEGER}
+    </select>
+    <select id="findFeeByUserTypeIdAndIsSeller" resultType="com.breeze.pojo.bo.FeeBO">
+        SELECT
+        f.`name` AS `name`,
+        f.`value` AS `value`,
+	    f.value_type_id AS fee_type_id,
+        fvt.`name` AS fee_type
+        FROM
+	    fee AS f
+	    JOIN fee_value_type AS fvt ON f.value_type_id = fvt.id
+        WHERE
+	    f.user_type_id =#{userTypeId,jdbcType=INTEGER} AND is_seller=#{isSeller,jdbcType=TINYINT}
+    </select>
+</mapper>

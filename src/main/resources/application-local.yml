@@ -1,0 +1,81 @@
+spring:
+  #mysql配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/projectx_clean?characterEncoding=utf8&serverTimezone=GMT%2B8
+    url: jdbc:mysql://10.45.53.117:3306/projectx_clean?characterEncoding=utf8&serverTimezone=GMT%2B8
+    username: root
+    password: password
+  devtools:
+    restart:
+      exclude=static/**,public/**:
+  #    password: Passw0rd
+  #redis配置
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    lettuce:
+      pool:
+        max-active: 32
+        max-wait: 300ms
+        max-idle: 16
+        min-idle: 8
+mybatis:
+  #配置本地mapper地址
+  mapper-locations: classpath:/mapper/*.xml
+  configuration:
+    #MyBatis日志配置
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #大小写转换
+    map-underscore-to-camel-case: true
+server:
+  #端口配置（默认8080）
+  port: 8081
+jwt:
+  ttl: 7200000
+  signName: breeze
+
+#Redis select db
+rdb:
+  #登录存放的index
+  loginDatabaseId: 1
+  #购物车存放的index
+  cartDatabaseId: 2
+#分页插件配置
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+uploadImage:
+# 图片服务地址前缀   windows
+  serverUrlPrefix: http://localhost:8080/projectx/resource/image/
+# 商品图片存放地址   windows
+  productPathPrefix: D:/projectx/resource/image/a/
+# 用户头像图片存放地址   windows
+  userAvatarPathPrefix: D:/projectx/resource/image/b/
+# 用户动态图片存放地址   windows
+  userImagePathPrefix: D:/projectx/resource/image/c/
+# 用戶投訴圖片存放地址:
+  feedbackImagePrefix: D:/projectx/resource/image/d/
+
+aliPay:
+  ali_return_url: http://02035205.ngrok.io/pay/returnUrl  #支付同步返回地址
+  ali_notify_url: http://02035205.ngrok.io/pay/notifyUrl #支付异步通知地址
+  bid_buy_notify_url: http://02035205.ngrok.io/pay/bidBuyNotifyUrl #出价买
+  bid_sell_notify_url: http://02035205.ngrok.io/pay/bidSellNotifyUrl #出价卖
+  now_buy_notify_url: http://02035205.ngrok.io/pay/nowBuyNotifyUrl #立刻买
+  now_sell_notify_url: http://02035205.ngrok.io /pay/nowSellNotifyUrl #立刻卖
+
+  product_no: FAST_INSTANT_TRADE_PAY #产品码
+  time_express: 15m #超时时间
+  url: https://openapi.alipaydev.com/gateway.do #支付网关
+  appid: 2016101100658587 #商户号
+  ali_public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmkiBEVvGbripAY63FRdW7SQ498y6DnJCl88ilHkyBPAty0FCJYCx135URFqMAZaV3L1WD5Lc/F9saCO9Cww+QXjR/AxXzm0YjTJAyGdsfCURPNSIrYTxAvlQohspY8pjrhLUZM3AfNtieW99WiFsdaYTlFYmZHqN+N/czPueodajTi2desyMLZkb/Pq+6h/CAQipZAueoEQgAy6ZwaBsCi++eLCHVdj13Ht03sJsRJaI/fmdoKU71AF3kJ1HaSwKRcqNMgYJMovLScWeu9jU4JmSHckKjLH4HuuejB2GW6AXHFuLQfJFWGPn/Lo0zoQanC6W9Vv37x8i1SnqFXoubwIDAQAB
+  public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk/+aRnE5ZeDhakn0RPcQm1L/k4Ck0HjmJp5UGlfb5R9YNR1wcEA/tY8HA85VSfxR0mmRAXcNeC+QsM+LthcH019kebbMNzw5/b2VgtS/T8CtsOLFy2NBQW5DITPkHpH8+h/uYmpbsfauM7p3qQz5wjvzkghZ+8xHI/6j63oCd32EsRJ441utx13W8nAvpVR/dFyuQkL7d15TEeI1ofUrfiUgjeHGl2z2nm5lsyzt6akXmJ/h3XyfMd57JoDMNbOA/qavbbvu3xrq6c+cpQj5YFnDdyXv+uRj4G2ylsGSO/96JmWrFch8YZLonGRpi12KSeScDMbxM4yRKsBtZYNX0wIDAQAB
+  private_key: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCT/5pGcTll4OFqSfRE9xCbUv+TgKTQeOYmnlQaV9vlH1g1HXBwQD+1jwcDzlVJ/FHSaZEBdw14L5Cwz4u2FwfTX2R5tsw3PDn9vZWC1L9PwK2w4sXLY0FBbkMhM+Qekfz6H+5ialux9q4zunepDPnCO/OSCFn7zEcj/qPregJ3fYSxEnjjW63HXdbycC+lVH90XK5CQvt3XlMR4jWh9St+JSCN4caXbPaebmWzLO3pqReYn+HdfJ8x3nsmgMw1s4D+pq9tu+7fGurpz5ylCPlgWcN3Je/65GPgbbKWwZI7/3omZasVyHxhkuicZGmLXYpJ5JwMxvEzjJEqwG1lg1fTAgMBAAECggEAG+ss5Dr5s/FPNKjMzrG4zURD+ERdUwJrkD9v6CRI1Bksn6B1FIfaPNrFXP9wcWuK1+GYPCmEPfbjGaedWHVRwZsOLjPApG7VFbvM14hgqp/TZDnzTCHmLnypZzsNvoKVsW2Sn7gmohTB2fpEFnzfJLgAg7zVlL19chnYPFSg4H9gBDGo6ma8ztdRbSsTqUWR/cl+5SQ/2igvnbzwukxIQRB0xZurLX1mDcJfYLaq7mCZlWQ25kzbRJI7qgllWZpHv2l5nLtR01K7tfzbgQklh9KTrQpA0K88H969UiWNMP6QtjOPdviZTyMSC2IEwgmBDp4fZfxH1y4ZCcAKhALJ4QKBgQDfc3cWfFrhfmDlH4ahXFobYv+v6mdqgkSW4y3i6YnOc8PbQTO+S6GYIIlsa1Epwa9fayBEVi/1QpYrZfxZzR4BPOQgXNbR2znO/bMsscjGTRJjRkyaZzBsssBjtnGVGV5yZsetMJRQy5VfDwuYbLFmigneHuabWsYQDEKFirFkYwKBgQCpjn65REjlLv+MVDzNH5nO6IThtobf/MgyIXtZQkPtDNmfdMz+ZRYcJLizD8h5hwJlfrxs9catl0nMLKsj40fCBoXtq/iBFBodVg6IYvjU5pdLU34/Vsg4jE+AbihekiQXM2JSPpLbeedl2A5p9OatHebVnZ9xgHDbHVnupUQB0QKBgBIVjjXLqq9FQyJIAuVcTA6bXIYoOmZsVJDBoh0TOYvz4o4EIOPtyw480+JqbQ8sFb1rNhlRwF/hG7Y3cszxxNPk0bGs0dX6IBuYfL/JQ66I3kwajGiSoWCqttdbFKY0f2hS2SYzIE3JrDUdSprzcQgTc+j+Jzu7hPwXgeq85s5xAoGBAKXPdHuGnGaLLFq1sfPCOG5PkksMbR8zmy7y8SYbmEODsnmuBh2tCw8glgJ9p8W4Uo6gfnFrdAwkC4YAFKh2xaCnMmd3KgBIgTU5B+M2LjI9Aa0nDCmymwA5rjFhCFdbQLHzjO3yxTieILzGqWnSlZarzCYQC3E6cqLENEMdGMFRAoGBAMlNVZktBV08g4dX96rxsGesFIuo80cXTEDpFfUFOk+v7eID5wG/c0xvHl/haFz6tPteOr7q0HOES6BVNKlEhjYSSBOcoNlsQhtaOti/adHTv3G5AOlhJYl0SP/JxoaNMSoWBrIHZHVndwjkLkkUcpdeq2h4a2eQayj6h0KcEnbE
+  sign_type: RSA2 #加密方式
+  charset: UTF-8
+  format: json

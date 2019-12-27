@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.ProductAttrValueMapper">
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.ProductAttrValue">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="attr_key_id" jdbcType="INTEGER" property="attrKeyId"/>
+        <result column="product_id" jdbcType="BIGINT" property="productId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, `name`, attr_key_id, product_id
+  </sql>
+    <select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM product_attr_value
+        WHERE id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+    DELETE FROM product_attr_value
+    WHERE id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="add" parameterType="com.breeze.pojo.ProductAttrValue">
+    INSERT INTO product_attr_value (id, `name`, attr_key_id,
+      product_id)
+    VALUES (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{attrKeyId,jdbcType=INTEGER},
+      #{productId,jdbcType=BIGINT})
+  </insert>
+    <update id="update" parameterType="com.breeze.pojo.ProductAttrValue">
+    UPDATE product_attr_value
+    SET `name` = #{name,jdbcType=VARCHAR},
+      attr_key_id = #{attrKeyId,jdbcType=INTEGER},
+      product_id = #{productId,jdbcType=BIGINT}
+    WHERE id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="findUniqueAttributeByProductId" resultType="com.breeze.pojo.bo.ProductUniqueAttributeBO">
+    SELECT
+        pak.display_name AS displayName,
+        pak.NAME AS `key`,
+        pav.NAME AS `value`
+    FROM
+        product_attr_value pav
+        JOIN product_attr_key AS pak ON pak.id = pav.attr_key_id
+    WHERE
+	pav.product_id = #{productId};
+    </select>
+</mapper>

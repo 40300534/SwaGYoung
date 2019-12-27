@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.SwipeImageMapper">
+
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.SwipeImage">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="image_folder" jdbcType="VARCHAR" property="imageFolder"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, image_folder, url, create_time, status
+    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM swipe_image
+        WHERE id = #{id,jdbcType=INTEGER};
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        DELETE FROM swipe_image
+        WHERE id = #{id,jdbcType=INTEGER};
+    </delete>
+
+    <insert id="add" parameterType="com.breeze.pojo.SwipeImage">
+        INSERT INTO swipe_image (id, image_folder, url,
+        create_time)
+        VALUES (#{id,jdbcType=INTEGER}, #{imageFolder,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP},#{status,jdbcType=TINYINT});
+    </insert>
+
+    <update id="update" parameterType="com.breeze.pojo.SwipeImage">
+        UPDATE swipe_image
+        SET image_folder = #{imageFolder,jdbcType=VARCHAR},
+        url = #{url,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        status = #{status,jdbcType=TINYINT}
+        WHERE id = #{id,jdbcType=INTEGER};
+    </update>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM swipe_image WHERE status = 1;
+    </select>
+</mapper>

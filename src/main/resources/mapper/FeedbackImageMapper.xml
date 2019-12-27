@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.FeedbackImageMapper">
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.FeedbackImage">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="feedback_id" jdbcType="BIGINT" property="feedbackId"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, feedback_id, url, create_time
+  </sql>
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM feedback_image
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Long">
+    DELETE FROM feedback_image
+    WHERE id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="add" parameterType="com.breeze.pojo.FeedbackImage">
+    INSERT INTO feedback_image (id, feedback_id, url,
+      create_time)
+    VALUES (#{id,jdbcType=BIGINT}, #{feedbackId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+    <update id="update" parameterType="com.breeze.pojo.FeedbackImage">
+    UPDATE feedback_image
+    SET feedback_id = #{feedbackId,jdbcType=BIGINT},
+      url = #{url,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    WHERE id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="findAll" resultType="com.breeze.pojo.FeedbackImage">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM feedback_image
+    </select>
+</mapper>

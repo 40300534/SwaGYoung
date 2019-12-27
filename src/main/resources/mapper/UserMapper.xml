@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.User">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_type_id" jdbcType="INTEGER" property="userTypeId"/>
+        <result column="is_active" jdbcType="TINYINT" property="isActive"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="display_name" jdbcType="VARCHAR" property="displayName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="dob" jdbcType="DATE" property="dob"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="updater" jdbcType="BIGINT" property="updater"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+            id, user_type_id, is_active,`name`, display_name, `password`, sex, dob, phone,avatar_url
+            ,create_time,update_time,updater
+    </sql>
+    <select id="findAll" resultType="com.breeze.pojo.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM user ORDER BY create_time DESC
+    </select>
+    <insert id="add" parameterType="com.breeze.pojo.User">
+        INSERT INTO user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userTypeId != null">
+                user_type_id,
+            </if>
+            <if test="isActive != null">
+                is_active,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="displayName != null">
+                display_name,
+            </if>
+            <if test="password != null">
+                `password`,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="dob != null">
+                dob,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="avatarUrl != null">
+                avatar_url,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="updater != null">
+                updater
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userTypeId != null">
+                #{userTypeId,jdbcType=INTEGER},
+            </if>
+            <if test="isActive != null">
+                #{isActive,jdbcType=TINYINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="displayName != null">
+                #{displayName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="dob != null">
+                #{dob,jdbcType=DATE},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarUrl != null">
+                #{avatarUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updater != null">
+                #{updater,jdbcType=BIGINT}
+            </if>
+        </trim>
+    </insert>
+    <select id="findByPhone" resultType="com.breeze.pojo.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM `user`
+        WHERE phone = #{phone};
+    </select>
+    <select id="findById" resultType="com.breeze.pojo.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM `user`
+        WHERE id = #{id};
+    </select>
+    <update id="update" parameterType="com.breeze.pojo.User">
+        UPDATE user
+        <set>
+            <if test="user.id != null">
+                id = #{user.id},
+            </if>
+            <if test="user.userTypeId != null">
+                user_type_id = #{user.userTypeId},
+            </if>
+            <if test="user.isActive != null">
+                is_active = #{user.isActive},
+            </if>
+            <if test="user.name != null">
+                `name` = #{user.name},
+            </if>
+            <if test="user.displayName != null">
+                displayname = #{user.displayName},
+            </if>
+            <if test="user.password != null">
+                password = #{user.password},
+            </if>
+            <if test="user.sex != null">
+                sex = #{user.sex},
+            </if>
+            <if test="user.dob != null">
+                dob = #{user.dob},
+            </if>
+            <if test="user.phone != null">
+                phone = #{user.phone},
+            </if>
+            <if test="user.avatarUrl != null">
+                avatar_url = #{user.avatarUrl}
+            </if>
+            <if test="user.createTime != null">
+                create_time = #{user.createTime},
+            </if>
+            <if test="user.updateTime != null">
+                update_time = #{user.updateTime},
+            </if>
+            <if test="user.updater != null">
+                updater = #{user.updater}
+            </if>
+        </set>
+        WHERE id=#{user.id}
+    </update>
+    <update id="updateAvatar" parameterType="com.breeze.pojo.User" useGeneratedKeys="true" keyProperty="user.avatar_url">
+        UPDATE `user`
+        SET avatar_url = #{avatarUrl}
+        WHERE id = #{id}
+    </update>
+    <update id="delete" parameterType="java.lang.Long">
+        UPDATE `user`
+        SET is_active = 2
+        WHERE id = #{id}
+    </update>
+    <select id="findByName" parameterType="java.lang.String" resultType="com.breeze.pojo.User">
+        SELECT * FROM user u WHERE  u.name LIKE CONCAT('%',#{name},'%')
+    </select>
+    <select id="findUserInfo" parameterType="java.lang.Long" resultType="com.breeze.pojo.bo.UserInfoBO">
+        SELECT u.avatar_url avatarUrl,u.display_name displayName,bid.buyNum,ask.sellNum,
+        u.phone phone,ut.`name` typeName
+        FROM `user` u,user_type ut,(
+        (SELECT COUNT(*) AS sellNum FROM product_ask AS pa WHERE pa.user_id=#{userId})ask,
+        (SELECT COUNT(*) AS buyNum FROM product_bid AS pb WHERE pb.user_id=#{userId})bid
+         )
+        WHERE u.user_type_id=ut.id AND u.id =#{userId}
+    </select>
+    <update id="updatePhone" >
+        UPDATE user AS u SET u.phone = #{phone} WHERE u.id=#{userId}
+    </update>
+    <update id="updatePassword">
+        UPDATE user AS u SET u.password=#{newPassword} WHERE u.id= #{userId}
+    </update>
+</mapper>

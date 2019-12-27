@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.TransactionMapper">
+    <resultMap id="BaseResultMap" type="com.breeze.pojo.Transaction">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="payment_type_id" jdbcType="INTEGER" property="paymentTypeId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="trade_no" jdbcType="VARCHAR" property="tradeNo"/>
+        <result column="out_trade_no" jdbcType="BIGINT" property="outTradeNo"/>
+        <result column="seller_account_id" jdbcType="VARCHAR" property="sellerAccountId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, amount, payment_type_id, create_time, trade_no, out_trade_no, seller_account_id
+  </sql>
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM transaction
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Long">
+    DELETE FROM transaction
+    WHERE id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="add" keyColumn="id" keyProperty="id" parameterType="com.breeze.pojo.Transaction"
+            useGeneratedKeys="true">
+    INSERT INTO transaction (id, amount, payment_type_id,
+      create_time, trade_no, out_trade_no, 
+      seller_account_id)
+    VALUES (#{id,jdbcType=BIGINT}, #{amount,jdbcType=DECIMAL}, #{paymentTypeId,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP},#{tradeNo,jdbcType=VARCHAR}  , #{outTradeNo,jdbcType=VARCHAR},
+      #{sellerAccountId,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="com.breeze.pojo.Transaction">
+    UPDATE transaction
+    SET amount = #{amount,jdbcType=DECIMAL},
+      payment_type_id = #{paymentTypeId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      trade_no = #{tradeNo,jdbcType=VARCHAR} ,
+      out_trade_no = #{outTradeNo,jdbcType=BIGINT} ,
+      seller_account_id = #{sellerAccountId,jdbcType=VARCHAR}
+    WHERE id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="findByOutTradeNo" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TRANSACTION
+        WHERE out_trade_no=#{outTradeNo,jdbcType=BIGINT}
+    </select>
+    <select id="findCountAmountByOutTradeNo" resultType="java.math.BigDecimal">
+        SELECT
+        SUM( amount )
+        FROM
+        `transaction`
+        WHERE
+        out_trade_no IN
+        <foreach collection="list" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

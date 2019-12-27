@@ -1,0 +1,4 @@
+#pull之后需要将此配置文件改为自己的active，增加dev中新增配置，请勿提交local配置。
+spring:
+  profiles:
+    active: local

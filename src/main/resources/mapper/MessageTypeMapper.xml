@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.MessageTypeMapper">
+
+    <select id="findAll" resultType="com.breeze.pojo.MessageType">
+        SELECT
+            id , `name`
+        FROM message_type;
+    </select>
+    
+    <select id="findById" resultType="com.breeze.pojo.MessageType" parameterType="java.lang.Long">
+        SELECT
+            id , `name`
+        FROM message_type
+        WHERE id = #{id}
+    </select>
+
+    <insert id="add" parameterType="com.breeze.pojo.MessageType">
+        INSERT INTO message_type (`name`)
+        VALUES (#{name});
+    </insert>
+
+    <update id="update" parameterType="com.breeze.pojo.MessageType">
+        UPDATE message_type SET `name` = #{name}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM message_type WHERE id = #{id};
+    </delete>
+
+</mapper>
