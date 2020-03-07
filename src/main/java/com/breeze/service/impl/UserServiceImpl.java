@@ -246,7 +246,7 @@ public class UserServiceImpl implements IUserService {
                 return UserPromptStatusEnum.USER_PASSWORD_SAME_ERROR.getCode();
             } else {
                 //去修改
-                return userMapper.updatePassword(userId, encoder.encode(newPassword))==1?ResultStatusEnum.SUCCESS.getCode(): UserPromptStatusEnum.USER_SERVER_ERROR.getCode();
+                return userMapper.updatePassword(userId, encoder.encode(newPassword))==1? ResultStatusEnum.SUCCESS.getCode(): UserPromptStatusEnum.USER_SERVER_ERROR.getCode();
             }
         } else {
             return UserPromptStatusEnum.USER_SERVER_ERROR.getCode();

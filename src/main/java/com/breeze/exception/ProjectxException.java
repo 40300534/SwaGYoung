@@ -1,6 +1,5 @@
 package com.breeze.exception;
 
-import com.breeze.constants.ResultMessage;
 import com.breeze.enums.ResultStatusEnum;
 
 /**
