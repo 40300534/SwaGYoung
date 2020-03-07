@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.breeze.mapper.ProductMapper">
-
+<!--
     <resultMap id="BaseResultMap" type="com.breeze.pojo.Product">
         <result column="id" property="id"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -436,5 +436,5 @@
         COUNT(id)
         FROM product
         WHERE `name` = #{name}
-    </select>
+    </select>-->
 </mapper>
