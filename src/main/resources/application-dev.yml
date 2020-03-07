@@ -8,10 +8,10 @@ spring:
   #mysql配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.45.53.117:3306/projectx?characterEncoding=utf8&serverTimezone=UTC
-    #url: jdbc:mysql://47.93.56.157:3306/projectx?characterEncoding=utf8&serverTimezone=UTC
+#    url: jdbc:mysql://localhost:3306/finishSchool?characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://182.92.106.58:3306/finishSchool?characterEncoding=utf8&serverTimezone=UTC
     #时区改正
-    #url: jdbc:mysql://47.93.56.157:3306/projectx?characterEncoding=utf8&serverTimezone=GMT%2B8
+    #url: jdbc:mysql://locahost:3306/数据库名?characterEncoding=utf8&serverTimezone=GMT%2B8
     username: root
     password: password
   #    password: Passw0rd
