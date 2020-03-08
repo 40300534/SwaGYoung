@@ -17,7 +17,7 @@
     <description>项目搭建（SpringBoot）</description>
 
     <properties>
-        <java.version>12</java.version>
+        <java.version>8</java.version>
     </properties>
     <dependencies>
         <!--web相关-->
@@ -25,6 +25,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+
 
         <!--MySQL驱动，高版本驱动需要用com.mysql.cj.jdbc.Driver-->
         <dependency>
@@ -43,6 +45,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
         <!--实用工具-->
@@ -176,10 +183,34 @@
 
 
     <build>
+        <finalName>app</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin><!--docker maven 插件 -->
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <configuration>
+                    <!--连接docker 私有仓库地址-->
+                    <imageName>47.100.13.76:5000/${project.artifactId}:${project.version}</imageName>
+                    <!--基础镜像 依赖 docker 中的jdk1.8镜像-->
+                    <baseImage>jdk1.8</baseImage>
+                    <!--java -jar 打包命令-->
+                    <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+                    <resources>
+                        <!--docker打包规则死的-->
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <!--连接docker 前提必须在docker中配置 其中ExecStart=后添加配置 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock-->
+                    <dockerHost>http://47.100.13.76:2375</dockerHost>
+                </configuration>
             </plugin>
         </plugins>
     </build>

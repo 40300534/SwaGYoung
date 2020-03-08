@@ -1,18 +1,20 @@
 package com.breeze.pojo;
+import com.breeze.pojo.dto.Pagedto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * 用户表
  * @author tx
  */
-public class User{
+@Entity
+public class User extends Pagedto {
     /**
      * 用户Id
      */
-    private Long id;
+    @Id
+    private String id;
     /**
      * 用户类型Id
      */
@@ -40,9 +42,7 @@ public class User{
     /**
      * 生日
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date dob;
+    private String dob;
     /**
      * 电话号码
      */
@@ -54,25 +54,21 @@ public class User{
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm" , timezone="GMT+8")
-    private Date createTime;
+    private String createTime;
     /**
      * 更新时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm" , timezone="GMT+8")
-    private Date updateTime;
+    private String updateTime;
     /**
      * 用户
      */
     private Long updater;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -124,13 +120,7 @@ public class User{
         this.sex = sex;
     }
 
-    public Date getDob() {
-        return dob;
-    }
 
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
 
     public String getPhone() {
         return phone;
@@ -148,19 +138,28 @@ public class User{
         this.avatarUrl = avatarUrl;
     }
 
-    public Date getCreateTime() {
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
 

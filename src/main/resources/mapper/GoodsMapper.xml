@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.breeze.mapper.GoodsMapper">
+   <select id="search" resultType="com.breeze.pojo.Goods">
+       SELECT * FROM goods
+
+    <where>
+        <if test="goods.goods_name !=null and goods.goods_name!='' ">
+            goods.goods_name LIKE CONCAT(CONCAT('%',#{goods.goods_name}),'%')
+        </if>
+        <if test="goods.goods_price !=null and goods.goods_price!='' ">
+            AND goods.goods_price =#{goods.goods_price}
+        </if>
+    </where>
+
+
+   </select>
+</mapper>
