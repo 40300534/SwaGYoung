@@ -88,11 +88,11 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                         if (diff > 10) {
                             Long newBirthTime = System.currentTimeMillis();
                             redisLoginUtils.set(token, userId);
-                            redisLoginUtils.expire(token, 1000 * 60 * 60 * 24);
+                            redisLoginUtils.expire(token, 1000 * 60*5);
                             redisLoginUtils.set(userId + token, newBirthTime.toString());
-                            redisLoginUtils.expire("" + userId + token, 1000 * 60 * 60 * 24);
+                            redisLoginUtils.expire("" + userId + token, 1000 * 60*5);
                             redisLoginUtils.set("" + userId, token);
-                            redisLoginUtils.expire("" + userId, 1000 * 60 * 60 * 24);
+                            redisLoginUtils.expire("" + userId, 1000 * 60*5);
                         }
                     }
                 }

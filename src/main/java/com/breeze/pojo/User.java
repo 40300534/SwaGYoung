@@ -1,17 +1,22 @@
 package com.breeze.pojo;
-
+import com.breeze.pojo.dto.Pagedto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 
 /**
  * 用户表
  * @author tx
  */
-public class User{
+@Entity
+public class User extends Pagedto {
     /**
      * 用户Id
      */
+    @Id
     private Long id;
     /**
      * 用户类型Id

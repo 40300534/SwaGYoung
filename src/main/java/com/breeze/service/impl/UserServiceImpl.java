@@ -5,10 +5,11 @@ import com.breeze.enums.UserPromptStatusEnum;
 import com.breeze.mapper.UserMapper;
 import com.breeze.pojo.User;
 import com.breeze.pojo.bo.UserInfoBO;
+import com.breeze.service.UserService;
 import com.breeze.util.UploadPictureUtils;
-import com.breeze.service.IUserService;
 import com.breeze.util.Md5TokenGenerator;
 import com.breeze.util.RedisLoginUtils;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,7 +23,7 @@ import java.util.List;
  * @author XiaoCi
  */
 @Service
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserMapper userMapper;
@@ -39,19 +40,6 @@ public class UserServiceImpl implements IUserService {
     @Value("${uploadImage.serverUrlPrefix}")
     private String serverUrlPrefix;
 
-    /**
-     * 查询全部用户
-     *
-     * @return
-     */
-    @Override
-    public List<User> findAll() {
-        List<User> userList = userMapper.findAll();
-        for (User user : userList) {
-            user.setAvatarUrl(serverUrlPrefix + user.getAvatarUrl());
-        }
-        return userList;
-    }
 
     /**
      * 用户添加
@@ -82,13 +70,13 @@ public class UserServiceImpl implements IUserService {
             String token = Md5TokenGenerator.generate(phone, password);
             //设置key生存时间，当key过期时，它会被自动删除，时间是秒
             redisLoginUtil.set(token, user.getId());
-            redisLoginUtil.expire(token, 1000 * 60 * 60 * 24);
+            redisLoginUtil.expire(token, 1000 * 60*5);//5分钟后失效重新登录
             Long currentTime = System.currentTimeMillis();
             redisLoginUtil.set(user.getId() + token, currentTime.toString());
-            redisLoginUtil.expire("" + user.getId() + token, 1000 * 60 * 60 * 24);
+            redisLoginUtil.expire("" + user.getId() + token, 1000 * 60*5);
             System.out.println(redisLoginUtil.get(token));
             redisLoginUtil.set("" + user.getId(), token);
-            redisLoginUtil.expire("" + user.getId(), 1000 * 60 * 60 * 24);
+            redisLoginUtil.expire("" + user.getId(), 1000 * 60*5);
             return user;
         }
 
@@ -133,6 +121,16 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void update(User user) {
         userMapper.update(user);
+    }
+
+    @Override
+    public PageInfo<User> findAll(int pageNum, int pageSize) {
+        return null;
+    }
+
+    @Override
+    public void del(String ids) {
+
     }
 
     /**
@@ -204,7 +202,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
-     * 修改手机号aaa
+     * 修改手机号
      *
      * @param phone
      * @return
@@ -246,7 +244,7 @@ public class UserServiceImpl implements IUserService {
                 return UserPromptStatusEnum.USER_PASSWORD_SAME_ERROR.getCode();
             } else {
                 //去修改
-                return userMapper.updatePassword(userId, encoder.encode(newPassword))==1? ResultStatusEnum.SUCCESS.getCode(): UserPromptStatusEnum.USER_SERVER_ERROR.getCode();
+                return userMapper.updatePassword(userId, encoder.encode(newPassword))==1?ResultStatusEnum.SUCCESS.getCode(): UserPromptStatusEnum.USER_SERVER_ERROR.getCode();
             }
         } else {
             return UserPromptStatusEnum.USER_SERVER_ERROR.getCode();

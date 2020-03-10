@@ -28,7 +28,7 @@
     <insert id="add" parameterType="com.breeze.pojo.User">
         INSERT INTO user
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
+            <if test="id != null" >
                 id,
             </if>
             <if test="userTypeId != null">
@@ -195,4 +195,5 @@
     <update id="updatePassword">
         UPDATE user AS u SET u.password=#{newPassword} WHERE u.id= #{userId}
     </update>
+
 </mapper>

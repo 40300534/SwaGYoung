@@ -12,7 +12,7 @@ spring:
   #    password: Passw0rd
   #redis配置
   redis:
-    host: localhost
+    host: 182.92.106.58
     port: 6379
     password:
     database: 0
@@ -22,6 +22,11 @@ spring:
         max-wait: 300ms
         max-idle: 16
         min-idle: 8
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: mysql
+    show-sql: true
 mybatis:
   #配置本地mapper地址
   mapper-locations: classpath:/mapper/*.xml
